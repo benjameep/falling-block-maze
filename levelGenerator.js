@@ -31,7 +31,7 @@ class Level{
     this.forest = []
     this.addToForest(this.startCell,0,true)
     this.addToForest(this.startCell,0,false)
-    let last = this.forest[0]
+    let ends = []
 //     While we still have stuff to do
 //    for(let i = 0; i < 10; i++){
     while(this.forest.length){
@@ -51,16 +51,14 @@ class Level{
         })
         this.addToForest(child,this.forest[ri].level+1)
       } else {
-        last = this.forest[ri].level>=last.level?this.forest[ri]:last
+        ends.push(this.forest[ri])
       }
       // Chop down the tree in the forest
       this.forest.splice(ri,1)
 //      console.log(this.forest.length,this.forest.map(n => n.level))
 //      this.display(true)
     }
-    this.level = last.level
-//    this.endCell = this.pickEnd(this.createTree(...last.placement))
-    this.pickEnd(this.createTree(...last.placement))
+    this.pickEnd(ends)
   }
   removePlaceholder(origin){
     this.grid.forEach(row => {
@@ -163,7 +161,34 @@ class Level{
       this.forest.push({level:level,placement:[choosen.intersection,dir,choosen.isHorz]})
     }
   }
-  pickEnd(tree){
-    this.endCell = tree.all[tree.all.length-1]
+  pickEnd(ends){
+    ends.sort((a,b) => b.level-a.level)
+    let end,tree,done = false,
+        solve = (tree) => {
+          if(!tree)return []
+          let found = tree.all.filter(cell => cell==this.endCell)
+          let inChildren = solve(tree.left,level+1).concat(solve(tree.right,level+1))
+          if(found.length){
+//            console.log('found it!')
+            return tree.all.slice(0,tree.all.indexOf(found[0]))
+          }
+          else if(inChildren.length)
+            return tree.all.concat(inChildren)
+          else 
+            return []
+        }
+    while(!done){
+      tree = this.createTree(...ends[0].placement)
+      end = tree.all.filter(cell => cell.owners.length == 1)
+      end = end[end.length-1]
+      if(end == undefined)
+        ends.shift()
+      else
+        done = true
+    }
+    this.level = ends[0].level
+    this.endCell = end
+    this.grid.forEach(row => row.forEach(cell => cell.owners = []))
+    this.solution = Array(4).fill().reduce((arr,n,i) => arr.concat(solve(this.createTree(this.startCell,i>=2,i%2))),[])
   }
 }

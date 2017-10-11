@@ -1,9 +1,12 @@
 let screen,ctx,grid,level,game,
     GRID_SIZE = 30,
-    CELL_COLOR = "#BBB",
-    BACKGROUND_COLOR = "#000",
-    TARGET_COLOR = "#904",
-    PLAYER_COLOR = "#f55"
+    CELL_COLOR = "#E7DACB",
+    BACKGROUND_COLOR = "#21374B",
+    TARGET_COLOR = "#4A89AA",
+    PLAYER_COLOR = "#BE4248",
+    MAX_TRAIL_COLOR = parseInt('a0',16),
+    MIN_TRAIL_COLOR = parseInt('64',16),
+    SOLUTION_COLOR = "#264663"
 document.addEventListener("DOMContentLoaded", () => { 
   screen = document.getElementById("canvas");
   ctx = screen.getContext("2d");
@@ -25,7 +28,7 @@ function initDraw(){
 
 function initLevel(){
   level = new Level(grid.width,grid.height)
-  game.restartLevel()
+  game.newLevel()
   draw()
 }
 
@@ -63,10 +66,17 @@ class Game{
   constructor(){
     this.commandQueue = []
     this.player = new Player()
+    this.showSolution = false
+  }
+  newLevel(){
+    this.player = new Player()
+    this.showSolution = false
+    this.restartLevel()
   }
   restartLevel(){
     this.commandQueue = []
     this.player.positionMe(level.startCell)
+    draw()
   }
   addToQueue(dir){
     this.commandQueue.push(dir)
@@ -94,49 +104,69 @@ class Game{
     })
     ctx.fillStyle = TARGET_COLOR
     grid.draw(level.endCell)
+    this.player.drawTrail()
+    if(this.showSolution){
+      ctx.fillStyle = SOLUTION_COLOR
+      level.solution.forEach(cell => grid.draw(cell))
+    }
     this.player.draw()
   }
 }
 
 class Player{
+  constructor(){
+    this.trails = [[]]
+  }
   positionMe(obj){
     this.r = obj.r
     this.c = obj.c
-    this.draw()
   }
-  go(dir,cb){
-    let next,i = {r:this.r,c:this.c},
-        normalize = n => n/Math.abs(n)||0,
+  find(dir){
+    let i = {r:this.r,c:this.c},
         getNext = () => {
           let [r,c] = [i.r+(!dir.h*(+dir.f||-1)),i.c+(dir.h*(+dir.f||-1))]
           return level.grid[r]&&level.grid[r][c]
-        }
-    next = getNext()
+        },
+        next = getNext()
     while(next && !next.isBlock && next != level.endCell){
       i = next
       next = getNext()
     }
-    let status = !next?'died':(next==level.endCell?'won':'')
-    let inc = {r:normalize(i.r-this.r),c:normalize(i.c-this.c)}
+    return {
+      status: !next?'died':(next==level.endCell?'won':'good'),
+      hit: next,
+      stopped:i
+    }
+  }
+  go(dir,cb){
+    let normalize = n => n/Math.abs(n)||0
+    let target = this.find(dir)
+    let inc = {r:normalize(target.stopped.r-this.r),c:normalize(target.stopped.c-this.c)}
     let animation = setInterval(() => {
+      this.trails[this.trails.length-1].push({r:this.r,c:this.c})
       this.r += inc.r
       this.c += inc.c
-      this.draw(inc)
-      if(this.r == i.r && this.c == i.c){
+      this.trails[this.trails.length-1].push({r:this.r,c:this.c})
+      draw()
+      if(this.r == target.stopped.r && this.c == target.stopped.c){
         clearInterval(animation)
-        if(status == 'died')
-          this.draw(null,true)
-        cb(status)
+        if(target.status == 'died')
+          this.trails.push([])
+        cb(target.status)
       }
     },20)
   }
-  draw(inc,dead){
-    if(inc){
-      ctx.fillStyle = "#333"
-      grid.draw({r:this.r-inc.r,c:this.c-inc.c})
-    }
-    ctx.fillStyle = !dead?PLAYER_COLOR:"#333"
+  draw(){
+    ctx.fillStyle = PLAYER_COLOR
     grid.draw(this)
+  }
+  drawTrail(){
+    this.trails.forEach((trail,i) => {
+      i = MAX_TRAIL_COLOR-(this.trails.length-1-i)*10
+      let hex = (i>MIN_TRAIL_COLOR?i:MIN_TRAIL_COLOR).toString(16)
+      ctx.fillStyle = "#"+hex+hex+hex
+      trail.forEach(cell => grid.draw(cell))
+    })
   }
 }
 
@@ -149,7 +179,7 @@ class Player{
     // 187 +
     // 189 -
 
-    //alert(event.keyCode);
+//    console.log(event.keyCode)
     switch (event.keyCode) {
       case 65: // a
       case 37: // <-
@@ -166,6 +196,10 @@ class Player{
       case 83: // s
       case 40: // v
         game.addToQueue({f:1,h:0});
+        break;
+      case 76: // l
+        game.showSolution = !game.showSolution
+        draw()
         break;
       default:
         return;
