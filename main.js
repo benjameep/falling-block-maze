@@ -2,11 +2,13 @@ let screen,ctx,grid,level,game,
     GRID_SIZE = 30,
     CELL_COLOR = "#E7DACB",
     BACKGROUND_COLOR = "#21374B",
-    TARGET_COLOR = "#4A89AA",
-    PLAYER_COLOR = "#BE4248",
+    TARGET_COLOR = "#0D4F8B",
+    PLAYER_COLOR = "#BE2C24",
     MAX_TRAIL_COLOR = parseInt('a0',16),
-    MIN_TRAIL_COLOR = parseInt('64',16),
-    SOLUTION_COLOR = "#264663"
+    INC_TRAIL_COLOR = 10,
+    MIN_TRAIL_COLOR = parseInt('50',16),
+    SOLUTION_COLOR = "#264663",
+    HINT_COLOR = "#BEC93A"
 document.addEventListener("DOMContentLoaded", () => { 
   screen = document.getElementById("canvas");
   ctx = screen.getContext("2d");
@@ -64,13 +66,11 @@ class Grid{
 
 class Game{
   constructor(){
-    this.commandQueue = []
-    this.player = new Player()
-    this.showSolution = false
   }
   newLevel(){
     this.player = new Player()
     this.showSolution = false
+    this.hints = []
     this.restartLevel()
   }
   restartLevel(){
@@ -82,6 +82,14 @@ class Game{
     this.commandQueue.push(dir)
     if(this.commandQueue.length == 1)
       this.checkQueue()
+  }
+  addHint(){
+    if(this.hints.length < level.blocks.length){
+      this.hints.push(level.blocks[this.hints.length])
+    } else {
+      this.hints = []
+    }
+    draw()
   }
   checkQueue(){
     if(this.commandQueue.length){
@@ -102,14 +110,16 @@ class Game{
     level.grid.forEach(row => {
       row.filter(cell => cell.isBlock).forEach(cell => grid.draw(cell))
     })
-    ctx.fillStyle = TARGET_COLOR
-    grid.draw(level.endCell)
     this.player.drawTrail()
     if(this.showSolution){
       ctx.fillStyle = SOLUTION_COLOR
       level.solution.forEach(cell => grid.draw(cell))
     }
+    ctx.fillStyle = HINT_COLOR
+    this.hints.forEach(cell => grid.draw(cell))
     this.player.draw()
+    ctx.fillStyle = TARGET_COLOR
+    grid.draw(level.endCell)
   }
 }
 
@@ -162,7 +172,7 @@ class Player{
   }
   drawTrail(){
     this.trails.forEach((trail,i) => {
-      i = MAX_TRAIL_COLOR-(this.trails.length-1-i)*10
+      i = MAX_TRAIL_COLOR-(this.trails.length-1-i)*INC_TRAIL_COLOR
       let hex = (i>MIN_TRAIL_COLOR?i:MIN_TRAIL_COLOR).toString(16)
       ctx.fillStyle = "#"+hex+hex+hex
       trail.forEach(cell => grid.draw(cell))
@@ -200,6 +210,9 @@ class Player{
       case 76: // l
         game.showSolution = !game.showSolution
         draw()
+        break;
+      case 72: // h
+        game.addHint()
         break;
       default:
         return;

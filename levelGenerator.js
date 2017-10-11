@@ -164,22 +164,35 @@ class Level{
   pickEnd(ends){
     ends.sort((a,b) => b.level-a.level)
     let end,tree,done = false,
+        find = (tree,end,level=0) => {
+          if(!tree)return []
+          if(tree.all.includes(end))
+            return [{end:end,level:level}]
+          else
+            return find(tree.left,end,level+1).concat(find(tree.right,end,level+1))
+        },
         solve = (tree) => {
           if(!tree)return []
           let found = tree.all.filter(cell => cell==this.endCell)
           let inChildren = solve(tree.left,level+1).concat(solve(tree.right,level+1))
           if(found.length){
 //            console.log('found it!')
-            return tree.all.slice(0,tree.all.indexOf(found[0]))
+            return tree.all.slice(0,tree.all.indexOf(found[0])+1)
           }
           else if(inChildren.length)
             return tree.all.concat(inChildren)
           else 
             return []
         }
+    // DANGER!!! Removing all Paths
+    this.grid.forEach(row => row.forEach(cell => cell.owners = []))
+    let entireTree = Array(4).fill().map((n,i) => this.createTree(this.startCell,i>=2,i%2))
     while(!done){
       tree = this.createTree(...ends[0].placement)
-      end = tree.all.filter(cell => cell.owners.length == 1)
+      end = tree.all.filter(cell => ends[0].level ==
+                  Math.min(...entireTree
+                                .reduce((a,tree) => a.concat(find(tree,cell)),[])
+                                .map(n => n.level)))
       end = end[end.length-1]
       if(end == undefined)
         ends.shift()
@@ -188,7 +201,15 @@ class Level{
     }
     this.level = ends[0].level
     this.endCell = end
-    this.grid.forEach(row => row.forEach(cell => cell.owners = []))
-    this.solution = Array(4).fill().reduce((arr,n,i) => arr.concat(solve(this.createTree(this.startCell,i>=2,i%2))),[])
+    this.solution = entireTree.reduce((a,tree) => a.concat(solve(tree)),[])
+    this.solution.splice(this.solution.indexOf(this.endCell))
+    console.log(this.endCell,this.solution)
+    this.blocks = []  
+    this.solution.reduce((last,n,i,a) => {
+      let diff = i&&{r:n.r-a[i-1].r,c:n.c-a[i-1].c}
+      if(diff && !diff.r && !diff.c)
+        this.blocks.push(this.grid[n.r+last.r][n.c+last.c])
+      return diff
+    },{})
   }
 }
