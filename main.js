@@ -86,8 +86,6 @@ class Game{
   addHint(){
     if(this.hints.length < level.blocks.length){
       this.hints.push(level.blocks[this.hints.length])
-    } else {
-      this.hints = []
     }
     draw()
   }
