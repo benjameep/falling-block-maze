@@ -203,7 +203,7 @@ class Level{
     this.endCell = end
     this.solution = entireTree.reduce((a,tree) => a.concat(solve(tree)),[])
     this.solution.splice(this.solution.indexOf(this.endCell))
-    console.log(this.endCell,this.solution)
+//    console.log(this.endCell,this.solution)
     this.blocks = []  
     this.solution.reduce((last,n,i,a) => {
       let diff = i&&{r:n.r-a[i-1].r,c:n.c-a[i-1].c}

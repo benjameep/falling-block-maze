@@ -66,6 +66,7 @@ class Grid{
 
 class Game{
   constructor(){
+    this.isBlind = false
   }
   newLevel(){
     this.player = new Player()
@@ -105,9 +106,11 @@ class Game{
   }
   draw(){
     ctx.fillStyle = CELL_COLOR
-    level.grid.forEach(row => {
-      row.filter(cell => cell.isBlock).forEach(cell => grid.draw(cell))
-    })
+    if(!this.isBlind){
+      level.grid.forEach(row => {
+        row.filter(cell => cell.isBlock).forEach(cell => grid.draw(cell))
+      })
+    }
     this.player.drawTrail()
     if(this.showSolution){
       ctx.fillStyle = SOLUTION_COLOR
@@ -212,6 +215,9 @@ class Player{
       case 72: // h
         game.addHint()
         break;
+      case 66: //b
+        game.isBlind = !game.isBlind
+        draw()
       default:
         return;
     }
