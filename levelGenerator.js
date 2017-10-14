@@ -184,6 +184,8 @@ class Level{
           else 
             return []
         }
+    
+    this.untouchables = this.grid.reduce((a,n)=>a.concat(n),[]).filter(cell => !cell.owners.length)
     // DANGER!!! Removing all Paths
     this.grid.forEach(row => row.forEach(cell => cell.owners = []))
     let entireTree = Array(4).fill().map((n,i) => this.createTree(this.startCell,i>=2,i%2))

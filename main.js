@@ -2,12 +2,13 @@ let screen,ctx,grid,level,game,
     GRID_SIZE = 30,
     CELL_COLOR = "#E7DACB",
     BACKGROUND_COLOR = "#21374B",
-    TARGET_COLOR = "#0D4F8B",
+    UNTOUCHABLES_COLOR = "#264159",
+    TARGET_COLOR = "#F15D2B",//0D4F8B
     PLAYER_COLOR = "#BE2C24",
     MAX_TRAIL_COLOR = parseInt('a0',16),
     INC_TRAIL_COLOR = 10,
     MIN_TRAIL_COLOR = parseInt('50',16),
-    SOLUTION_COLOR = "#264663",
+    SOLUTION_COLOR = "#71C668",
     HINT_COLOR = "#BEC93A"
 document.addEventListener("DOMContentLoaded", () => { 
   screen = document.getElementById("canvas");
@@ -62,11 +63,19 @@ class Grid{
                  this.offsetY + cell.r * GRID_SIZE,
                  GRID_SIZE,GRID_SIZE);
   }
+  drawCircle(cell){
+    ctx.beginPath()
+    ctx.arc(this.offsetX + cell.c * GRID_SIZE + GRID_SIZE/2, 
+            this.offsetY + cell.r * GRID_SIZE + GRID_SIZE/2,
+            GRID_SIZE/2,GRID_SIZE/2,0,2*Math.PI)
+    ctx.fill()
+  }
 }
 
 class Game{
   constructor(){
     this.isBlind = false
+    this.drawUntouchables = false
   }
   newLevel(){
     this.player = new Player()
@@ -111,6 +120,8 @@ class Game{
         row.filter(cell => cell.isBlock).forEach(cell => grid.draw(cell))
       })
     }
+    ctx.fillStyle = this.drawUntouchables?CELL_COLOR:UNTOUCHABLES_COLOR
+    level.untouchables.forEach(cell => grid.draw(cell))
     this.player.drawTrail()
     if(this.showSolution){
       ctx.fillStyle = SOLUTION_COLOR
@@ -217,6 +228,10 @@ class Player{
         break;
       case 66: //b
         game.isBlind = !game.isBlind
+        draw()
+        break;
+      case 85:
+        game.drawUntouchables = !game.drawUntouchables
         draw()
       default:
         return;
