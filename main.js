@@ -1,13 +1,13 @@
 let screen,ctx,grid,level,game,
     GRID_SIZE = 30,
-    CELL_COLOR = "#E7DACB",
+    CELL_COLOR = "#c5e0f9",
     BACKGROUND_COLOR = "#21374B",
-    UNTOUCHABLES_COLOR = "#264159",
-    TARGET_COLOR = "#F15D2B",//0D4F8B
-    PLAYER_COLOR = "#BE2C24",
+    UNTOUCHABLES_COLOR = "#335472",
+    TARGET_COLOR = "#353fff",
+    PLAYER_COLOR = "#ff9e21",
     TRAIL_COLOR = gradient('#49ba3f','#dc30e5',10),//gradient('#a0a0a0','#505050',10),
-    SOLUTION_COLOR = "#71C668",
-    HINT_COLOR = "#BEC93A"
+    SOLUTION_COLOR = "#70bbff",
+    HINT_COLOR = "#ffff5b"
 document.addEventListener("DOMContentLoaded", () => { 
   screen = document.getElementById("canvas");
   ctx = screen.getContext("2d");
