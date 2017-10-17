@@ -5,9 +5,7 @@ let screen,ctx,grid,level,game,
     UNTOUCHABLES_COLOR = "#264159",
     TARGET_COLOR = "#F15D2B",//0D4F8B
     PLAYER_COLOR = "#BE2C24",
-    MAX_TRAIL_COLOR = parseInt('a0',16),
-    INC_TRAIL_COLOR = 10,
-    MIN_TRAIL_COLOR = parseInt('50',16),
+    TRAIL_COLOR = gradient('#49ba3f','#dc30e5',10),//gradient('#a0a0a0','#505050',10),
     SOLUTION_COLOR = "#71C668",
     HINT_COLOR = "#BEC93A"
 document.addEventListener("DOMContentLoaded", () => { 
@@ -45,12 +43,7 @@ function fillScreen(){
   screen.width = window.innerWidth-1
   screen.height = window.innerHeight-1
 }
-//class Cell{
-//  constructor(x,y){
-//    this.x = (x + Grid.width) % Grid.width;
-//    this.y = (y + Grid.height) % Grid.height;
-//  }
-//}
+
 class Grid{
   constructor(){
     this.width = Math.floor(screen.width / GRID_SIZE);
@@ -184,9 +177,8 @@ class Player{
   }
   drawTrail(){
     this.trails.forEach((trail,i) => {
-      i = MAX_TRAIL_COLOR-(this.trails.length-1-i)*INC_TRAIL_COLOR
-      let hex = (i>MIN_TRAIL_COLOR?i:MIN_TRAIL_COLOR).toString(16)
-      ctx.fillStyle = "#"+hex+hex+hex
+      var color = Math.min(this.trails.length-1-i,TRAIL_COLOR.length-1)
+      ctx.fillStyle = TRAIL_COLOR[color]
       trail.forEach(cell => grid.draw(cell))
     })
   }
