@@ -33,7 +33,20 @@ function initLevel(){
   draw()
 }
 
+function updateColors(){
+  var get = str => getComputedStyle(document.body).getPropertyValue('--'+str).trim();
+  CELL_COLOR = get('cell')
+  BACKGROUND_COLOR = get('background')
+  UNTOUCHABLES_COLOR = get('untouchables')
+  TARGET_COLOR = get('target')
+  PLAYER_COLOR = get('player')
+  TRAIL_COLOR = gradient(get('trailFirst'),get('trailLast'),get('trailLength'))
+  SOLUTION_COLOR = get('solution')
+  HINT_COLOR = get('hint')
+}
+
 function draw(){
+  updateColors()
   ctx.fillStyle = BACKGROUND_COLOR
   ctx.fillRect(0,0,screen.width,screen.height)
   game.draw()

@@ -3,9 +3,31 @@
   <script src="levelGenerator.js"></script>
   <script src="main.js"></script>
   <style>
+    :root{
+      --cell: #c5e0f9;
+      --background: #21374B;
+      --untouchables: #335472;
+      --target: #353fff;
+      --player: #ff9e21;
+      --trailFirst: #49ba3f;
+      --trailLast: #dc30e5;
+      --trailLength: 10;
+      --solution: #70bbff;
+      --hint: #ffff5b;
+    }
     *{margin:0;padding:0}
     body{
-      background-color: black
+      background-color: black;
+      color: var(--cell);
+      color: var(--background);
+      color: var(--untouchables);
+      color: var(--target);
+      color: var(--player);
+      color: var(--trailFirst);
+      color: var(--trailLast);
+      color: var(--trailLength);
+      color: var(--solution);
+      color: var(--hint);
     }
   </style>
 </head>
