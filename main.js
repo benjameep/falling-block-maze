@@ -1,13 +1,15 @@
 let screen,ctx,grid,level,game,
     GRID_SIZE = 30,
-    CELL_COLOR = "#c5e0f9",
+    CELL_COLOR = "#91bee6",
     BACKGROUND_COLOR = "#21374B",
-    UNTOUCHABLES_COLOR = "#335472",
-    TARGET_COLOR = "#353fff",
-    PLAYER_COLOR = "#ff9e21",
-    TRAIL_COLOR = gradient('#49ba3f','#dc30e5',10),//gradient('#a0a0a0','#505050',10),
-    SOLUTION_COLOR = "#70bbff",
-    HINT_COLOR = "#ffff5b"
+    UNTOUCHABLES_COLOR = "#15232f",
+    TARGET_COLOR = "#b100ff",
+    PLAYER_COLOR = "#00ffe5",
+    SOLUTION_COLOR = "#733f8a",
+    HINT_COLOR = "#894EA3",
+    TRAIL_COLOR = gradient('#3293b1','#19647b',10),
+		UPDATE_COLORS = false
+			
 document.addEventListener("DOMContentLoaded", () => { 
   screen = document.getElementById("canvas");
   ctx = screen.getContext("2d");
@@ -16,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initLevel()
   draw()
 });
+
 window.addEventListener('resize', () => {
   initDraw()
   initLevel()
@@ -46,7 +49,11 @@ function updateColors(){
 }
 
 function draw(){
-  updateColors()
+	if(UPDATE_COLORS){
+		if(UPDATE_COLORS === true)
+			UPDATE_COLORS = setInterval(draw,500)
+		updateColors()
+	}
   ctx.fillStyle = BACKGROUND_COLOR
   ctx.fillRect(0,0,screen.width,screen.height)
   game.draw()
