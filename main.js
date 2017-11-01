@@ -132,7 +132,9 @@ class Game{
       level.grid.forEach(row => {
         row.filter(cell => cell.isBlock).forEach(cell => grid.draw(cell))
       })
-    }
+    } else {
+			this.player.hits.forEach(cell => grid.draw(cell))
+		}
     ctx.fillStyle = this.drawUntouchables?CELL_COLOR:UNTOUCHABLES_COLOR
     level.untouchables.forEach(cell => grid.draw(cell))
     this.player.drawTrail()
@@ -151,6 +153,7 @@ class Game{
 class Player{
   constructor(){
     this.trails = [[]]
+		this.hits = []
   }
   positionMe(obj){
     this.r = obj.r
@@ -184,6 +187,9 @@ class Player{
       this.trails[this.trails.length-1].push({r:this.r,c:this.c})
       draw()
       if(this.r == target.stopped.r && this.c == target.stopped.c){
+				if(!this.hits.includes(target.hit) && target.status=='good')
+					this.hits.push(target.hit)
+				draw()
         clearInterval(animation)
         if(target.status == 'died')
           this.trails.push([])
