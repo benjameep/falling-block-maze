@@ -7,7 +7,7 @@ let screen,ctx,grid,level,game,
     PLAYER_COLOR = "#00ffe5",
     SOLUTION_COLOR = "#733f8a",
     HINT_COLOR = "#894EA3",
-    TRAIL_COLOR = gradient('#3293b1','#19647b',5),
+    TRAIL_COLOR = gradient('#3293b1','#19647b',3),
 		UPDATE_COLORS = false,
 		LEVEL_LIMIT = 5
 			
