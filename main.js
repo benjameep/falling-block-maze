@@ -7,8 +7,9 @@ let screen,ctx,grid,level,game,
     PLAYER_COLOR = "#00ffe5",
     SOLUTION_COLOR = "#733f8a",
     HINT_COLOR = "#894EA3",
-    TRAIL_COLOR = gradient('#3293b1','#19647b',10),
-		UPDATE_COLORS = false
+    TRAIL_COLOR = gradient('#3293b1','#19647b',5),
+		UPDATE_COLORS = false,
+		LEVEL_LIMIT = 5
 			
 document.addEventListener("DOMContentLoaded", () => { 
   screen = document.getElementById("canvas");
@@ -31,7 +32,7 @@ function initDraw(){
 }
 
 function initLevel(){
-  level = new Level(grid.width,grid.height)
+  level = new Level(grid.width,grid.height,LEVEL_LIMIT)
   game.newLevel()
   draw()
 }

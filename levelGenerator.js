@@ -23,7 +23,8 @@ class LevelCell{
 }
 
 class Level{
-  constructor(w,h){
+  constructor(w,h,limit){
+		this.limit = limit
     this.grid = Array(h).fill().map((n,r) => Array(w).fill().map((n,c)=>new LevelCell(r,c)))
     // Pick a starting cell
     this.startCell = this.grid[Math.floor(Math.random()*this.grid.length)][Math.floor(Math.random()*this.grid[0].length)]
@@ -162,7 +163,8 @@ class Level{
     }
   }
   pickEnd(ends){
-    ends.sort((a,b) => b.level-a.level)
+    ends = ends.filter(e => !this.limit || e.level <= this.limit)
+		ends.sort((a,b) => b.level-a.level)
     let end,tree,done = false,
         find = (tree,end,level=0) => {
           if(!tree)return []
