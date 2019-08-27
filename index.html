@@ -1,35 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <script src="color-converter.js"></script>
-  <script src="levelGenerator.js"></script>
-  <script src="main.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=800, initial-scale=1.0">
+
+  <title>Gravity Maze</title>
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- iOS meta tags and icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Weather PWA">
+  <link rel="apple-touch-icon" href="/images/152.png">
+
+  <!-- SEO description -->
+  <meta name="description" content="Navigate a maze by changing direction of gravity">
+
+  <!-- address bar color -->
+  <meta name="theme-color" content="#2F3BA2" />
+
   <style>
-    :root{
-			--cell: #91bee6;
-			--background: #21374B;
-			--untouchables: #15232f;
-			--target: #b100ff;
-			--player: #00ffe5;
-			--trailFirst: #3293b1;
-			--trailLast: #19647b;
-			--trailLength: 10;
-			--solution: #733f8a;
-			--hint: #894EA3;
+    body {
+      margin:0;
+      height: 100%;
+      width: 100%;
+      position:fixed;
     }
-    *{margin:0;padding:0}
-    body{
-      background-color: var(--background);
-      color: var(--cell);
-      color: var(--untouchables);
-      color: var(--target);
-      color: var(--player);
-      color: var(--trailFirst);
-      color: var(--trailLast);
-      color: var(--trailLength);
-      color: var(--solution);
-      color: var(--hint);
-    }
-  </style>
+  </style>  
 </head>
 <body>
-  <canvas id="canvas"></canvas>
+  <script src="lib/p5.js"></script>
+  <script src="app.js"></script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+          .then((reg) => {
+            console.log('Service worker registered.', reg);
+          });
+    });
+  }
+  </script>
 </body>
+</html>
